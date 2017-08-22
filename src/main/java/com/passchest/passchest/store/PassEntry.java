@@ -18,9 +18,20 @@ public class PassEntry {
 	public PassEntry(String user, String password) {
 		if(user.contains("@")) {
 			this.email = user;
+			this.username = "";
 		} else {
+			this.email = "";
 			this.username = user;
 		}
 		this.password = password;
+	}
+	
+	@Override
+	public String toString() {
+		String hiddenValue = "";
+		for(int i = 0; i < this.password.length(); i++) {
+			hiddenValue += "*";
+		}
+		return "User: " + username + ". Email: " + email + ". Password: " + hiddenValue;
 	}
 }

@@ -30,7 +30,7 @@ public class PassStore {
 	
 	private static Drive service;
 	
-	private List<PassGroup> passwords;
+	public List<PassGroup> passwords;
 	
 	public PassStore() {
 		this.passwords = new ArrayList<>();
@@ -153,19 +153,47 @@ public class PassStore {
 	 * @param passGroup The group to add the username/password pair to
 	 * @param user Username or email
 	 * @param password Password
+	 * @return Created PassEntry
 	 */
-	public void putPassword(String passGroup, String user, String password) {
+	public PassEntry putPassword(String passGroup, String user, String password) {
 		boolean saved = false;
+		PassEntry entry = new PassEntry(user, password);
 		for(PassGroup group : passwords) {
 			if(!group.groupName.equals(passGroup))
-				return;
-			group.groupEntries.add(new PassEntry(user, password));
+				continue;
+			group.groupEntries.add(entry);
 			saved = true;
 		}
 		if(!saved) {
 			List<PassEntry> entryList = new ArrayList<>();
-			entryList.add(new PassEntry(user, password));
+			entryList.add(entry);
 			passwords.add(new PassGroup(passGroup, new ArrayList<String>(), entryList));
 		}
+		return entry;
+	}
+	
+	/**
+	 * Adds an username/password pair to the pass store
+	 * @param passGroup The group to add the username/password pair to
+	 * @param username Username
+	 * @param email Email
+	 * @param password Password
+	 * @return Created PassEntry
+	 */
+	public PassEntry putPassword(String passGroup, String username, String email, String password) {
+		boolean saved = false;
+		PassEntry entry = new PassEntry(username, email, password);
+		for(PassGroup group : passwords) {
+			if(!group.groupName.equals(passGroup))
+				continue;
+			group.groupEntries.add(entry);
+			saved = true;
+		}
+		if(!saved) {
+			List<PassEntry> entryList = new ArrayList<>();
+			entryList.add(entry);
+			passwords.add(new PassGroup(passGroup, new ArrayList<String>(), entryList));
+		}
+		return entry;
 	}
 }
