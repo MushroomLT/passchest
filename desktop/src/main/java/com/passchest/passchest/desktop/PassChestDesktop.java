@@ -1,4 +1,4 @@
-package com.passchest.passchest;
+package com.passchest.passchest.desktop;
 
 import java.io.IOException;
 
@@ -9,10 +9,7 @@ import com.passchest.passchest.crypto.AES.InvalidPasswordException;
 import com.passchest.passchest.crypto.AES.StrongEncryptionNotAvailableException;
 import com.passchest.passchest.store.PassStore;
 
-public class PassChest {
-	
-
-
+public class PassChestDesktop {
 	public static void main(String[] args) {
 		String password = JOptionPane.showInputDialog("Enter Master Password:");
 		try {
@@ -32,15 +29,5 @@ public class PassChest {
 			JOptionPane.showMessageDialog(null, "Decryption not supported on this device!");
 			System.exit(0);
 		}
-		
-		//PassStore.savePassStore(password);
-		
-//		try {
-//			AES.decrypt(password.toCharArray(), new FileInputStream(PassStore.passStoreFile), new FileOutputStream(new File(PassStore.passStoreFile.getParent(), "decrypt.txt")));
-//		} catch (InvalidPasswordException | InvalidAESStreamException | IOException
-//				| StrongEncryptionNotAvailableException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
 }

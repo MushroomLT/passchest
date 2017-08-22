@@ -15,4 +15,6 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'passchest.git'
+rootProject.name = 'passchest'
+include 'desktop'
+project(":desktop").name = 'passchest-desktop'
