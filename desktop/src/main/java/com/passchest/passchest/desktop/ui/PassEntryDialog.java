@@ -32,13 +32,17 @@ public class PassEntryDialog extends JDialog {
 	private JComboBox<String> groupComboBox;
 	
 	public PassEntryDialog(JFrame owner) {
-		super(owner, "New Password Entry", true);
+		this(owner, "", "", "");
+	}
+	
+	public PassEntryDialog(JFrame owner, String username, String email, String password) {
+		super(owner, password.equals("") ? "New Password Entry" : "Password Entry Edit", true);
 		setResizable(false);
-		setSize(300, 250);
+		setSize(400, 250);
 		getContentPane().setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		JPanel panel = new JPanel();
-		panel.setPreferredSize(new Dimension(300, 175));
+		panel.setPreferredSize(new Dimension(385, 175));
 		getContentPane().add(panel);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] {100, 185};
@@ -82,6 +86,7 @@ public class PassEntryDialog extends JDialog {
 		gbc_userField.gridy = 1;
 		panel.add(userField, gbc_userField);
 		userField.setColumns(10);
+		userField.setText(username);
 		
 		JLabel lblEmail = new JLabel("Email");
 		GridBagConstraints gbc_lblEmail = new GridBagConstraints();
@@ -100,6 +105,7 @@ public class PassEntryDialog extends JDialog {
 		gbc_emailField.gridy = 2;
 		panel.add(emailField, gbc_emailField);
 		emailField.setColumns(10);
+		emailField.setText(email);
 		
 		JLabel lblPassword = new JLabel("Password");
 		GridBagConstraints gbc_lblPassword = new GridBagConstraints();
@@ -116,8 +122,9 @@ public class PassEntryDialog extends JDialog {
 		gbc_passwordField.gridx = 1;
 		gbc_passwordField.gridy = 3;
 		panel.add(passwordField, gbc_passwordField);
+		passwordField.setText(password);
 		
-		JButton btnCreate = new JButton("Create");
+		JButton btnCreate = new JButton("Save");
 		btnCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				((PassChestFrame) PassEntryDialog.this.getParent()).addPassword(groupComboBox.getSelectedItem().toString(), userField.getText(), emailField.getText(), new String(passwordField.getPassword()));

@@ -4,6 +4,17 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -11,12 +22,11 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTree;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import com.passchest.passchest.crypto.AES.InvalidKeyLengthException;
 import com.passchest.passchest.crypto.AES.StrongEncryptionNotAvailableException;
@@ -24,11 +34,6 @@ import com.passchest.passchest.desktop.PassChestDesktop;
 import com.passchest.passchest.store.PassEntry;
 import com.passchest.passchest.store.PassGroup;
 import com.passchest.passchest.store.PassStore;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
 public class PassChestFrame extends JFrame {
@@ -42,13 +47,6 @@ public class PassChestFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(660, 440);
 		
-		try {
-			UIManager.setLookAndFeel(
-			        UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-				| UnsupportedLookAndFeelException e) {
-		}
-		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{650, 0};
 		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
@@ -58,6 +56,38 @@ public class PassChestFrame extends JFrame {
 		tree = new JTree();
 		treeModel = new DefaultTreeModel(populateTree(new DefaultMutableTreeNode("Passwords")));
 		tree.setModel(treeModel);
+		tree.addMouseListener(new MouseAdapter() {
+		    public void mousePressed(MouseEvent e) {
+		        int selRow = tree.getRowForLocation(e.getX(), e.getY());
+		        TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+		        if(selRow != -1) {
+		            if(e.getClickCount() == 2) {
+		            	Object selectedNode = ((DefaultMutableTreeNode)selPath.getLastPathComponent()).getUserObject();
+		            	if(selectedNode instanceof PassEntry) {
+		            		String[] options = new String[]{"Save To Clipboard", "Display", "Edit"};
+		            		int option = JOptionPane.showOptionDialog(PassChestFrame.this, "What would you like to do?", "PassChest",
+		            		                         JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
+		            		                         null, options, options[0]);
+		            		switch(option) {
+		            		case 0:
+		            			StringSelection selection = new StringSelection(((PassEntry)selectedNode).password);
+		            			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		            			clipboard.setContents(selection, selection);
+		            			break;
+		            		case 1:
+		            			JOptionPane.showMessageDialog(PassChestFrame.this, "Password: " + ((PassEntry)selectedNode).password);
+		            			break;
+		            		case 2:
+		        				JDialog dialog = new PassEntryDialog(PassChestFrame.this, ((PassEntry)selectedNode).username, ((PassEntry)selectedNode).email, ((PassEntry)selectedNode).password);
+		        				dialog.setLocationRelativeTo(PassChestFrame.this);
+		        				dialog.setVisible(true);
+		            			break;
+		            		}
+		            	}
+		            }
+		        }
+		    }
+		});
 		GridBagConstraints gbc_tree = new GridBagConstraints();
 		gbc_tree.insets = new Insets(0, 0, 5, 0);
 		gbc_tree.fill = GridBagConstraints.BOTH;
@@ -77,38 +107,25 @@ public class PassChestFrame extends JFrame {
 		btnAddPassword.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JDialog dialog = new PassEntryDialog(PassChestFrame.this);
+				dialog.setLocationRelativeTo(PassChestFrame.this);
 				dialog.setVisible(true);
 			}
 		});
 		panel.add(btnAddPassword);
 		
-		JButton btnRemovePassword = new JButton("Remove Password");
-		btnRemovePassword.addActionListener(new ActionListener() {
+		JButton btnAddGroup = new JButton("Add Group");
+		btnAddGroup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-				if(node != null) {
-					if(node.getLevel() == 2) {
-						for(PassGroup group : PassStore.instance.passwords) {
-							if(group.groupName.equals(((DefaultMutableTreeNode)node.getParent()).getUserObject())) {
-								if(JOptionPane.showConfirmDialog(PassChestFrame.this, "Are you sure you want to remove entry " + node.getUserObject() + " from group " + group.groupName + "?") == JOptionPane.OK_OPTION) {
-									group.groupEntries.remove(node.getUserObject());
-									treeModel.removeNodeFromParent(node);
-								} else {
-									return;
-								}
-							}
-						}
-					}
+				String groupName = JOptionPane.showInputDialog(PassChestFrame.this, "Enter new group name:");
+				if(!groupName.equals("")) {
+					PassStore.instance.passwords.add(new PassGroup(groupName, new ArrayList<String>(), new ArrayList<PassEntry>()));
+					DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(groupName);
+					groupNodes.put(groupName, groupNode);
+					treeModel.insertNodeInto(groupNode, (MutableTreeNode) treeModel.getRoot(), ((DefaultMutableTreeNode) treeModel.getRoot()).getChildCount());
 				}
 			}
 		});
-		panel.add(btnRemovePassword);
-		
-		JButton btnAddGroup = new JButton("Add Group");
 		panel.add(btnAddGroup);
-		
-		JButton btnRemoveGroup = new JButton("Remove Group");
-		panel.add(btnRemoveGroup);
 		
 		JButton btnSavePasswords = new JButton("Save Passwords");
 		btnSavePasswords.addActionListener(new ActionListener() {
@@ -125,6 +142,42 @@ public class PassChestFrame extends JFrame {
 				}
 			}
 		});
+		
+		JButton btnRemove = new JButton("Remove");
+		btnRemove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				if(node != null) {
+					if(node.getLevel() == 1) {
+						PassGroup removeGroup = null;
+						for(PassGroup group : PassStore.instance.passwords) {
+							if(group.groupName.equals(((DefaultMutableTreeNode)node).getUserObject())) {
+								if(JOptionPane.showConfirmDialog(PassChestFrame.this, "Are you sure you want to remove group " + group.groupName + " with all it's entries?") == JOptionPane.OK_OPTION) {
+									removeGroup = group;
+									break;
+								}
+							}
+						}
+						if(removeGroup != null) {
+							PassStore.instance.passwords.remove(removeGroup);
+							treeModel.removeNodeFromParent(node);
+						}
+					} else if(node.getLevel() == 2) {
+						for(PassGroup group : PassStore.instance.passwords) {
+							if(group.groupName.equals(((DefaultMutableTreeNode)node.getParent()).getUserObject())) {
+								if(JOptionPane.showConfirmDialog(PassChestFrame.this, "Are you sure you want to remove entry " + node.getUserObject() + " from group " + group.groupName + "?") == JOptionPane.OK_OPTION) {
+									group.groupEntries.remove(node.getUserObject());
+									treeModel.removeNodeFromParent(node);
+								} else {
+									return;
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+		panel.add(btnRemove);
 		panel.add(btnSavePasswords);
 	}
 

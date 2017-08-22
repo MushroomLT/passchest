@@ -7,6 +7,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.passchest.passchest.crypto.AES.InvalidAESStreamException;
 import com.passchest.passchest.crypto.AES.InvalidPasswordException;
@@ -16,6 +18,13 @@ import com.passchest.passchest.store.PassStore;
 
 public class PassChestDesktop {
 	public static void main(String[] args) {
+		try {
+			UIManager.setLookAndFeel(
+			        UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+		}
+		
 		String password = displayPasswordInputDialog(null);
 		try {
 			if(!PassStore.loadPassStore(password)) {
