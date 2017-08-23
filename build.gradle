@@ -6,7 +6,7 @@
  * user guide available at https://docs.gradle.org/3.5/userguide/java_library_plugin.html
  */
 
-allprojects {
+configure(subprojects.findAll {it.name != 'passchest-android'}) {
     apply plugin: 'java'
     group = 'com.passchest.passchest'
     version = '1.0'
@@ -33,19 +33,6 @@ allprojects {
 	    testImplementation 'junit:junit:4.12'
 	}
 	
-}
-
-subprojects {
-	dependencies {
-		compile rootProject
-	}
-}
-
-dependencies {
-	compile 'com.google.api-client:google-api-client:1.22.0'
-	compile 'com.google.oauth-client:google-oauth-client-jetty:1.22.0'
-    compile 'com.google.apis:google-api-services-drive:v3-rev81-1.22.0'
-    compile 'org.apache.commons:commons-crypto:1.0.0'
 }
 
 

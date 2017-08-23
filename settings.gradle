@@ -16,5 +16,9 @@ include 'services:webservice'
 */
 
 rootProject.name = 'passchest'
+include 'core';
+project(":core").name = 'passchest-core'
 include 'desktop'
 project(":desktop").name = 'passchest-desktop'
+include 'android'
+project(":android").name = 'passchest-android'

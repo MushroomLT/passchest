@@ -3,6 +3,10 @@ apply plugin: 'application'
 
 mainClassName = 'com.passchest.passchest.desktop.PassChestDesktop'
 
+dependencies {
+	compile project(":passchest-core")
+}
+
 jar {
   manifest {
     attributes(

@@ -87,4 +87,9 @@ local.properties
 .scala_dependencies
 .worksheet
 
+# Intellij IDEA
+*.iml
+/.idea/workspace.xml
+/.idea/libraries
+
 src/main/resources/client_secret.json
