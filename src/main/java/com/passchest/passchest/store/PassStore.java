@@ -3,6 +3,7 @@ package com.passchest.passchest.store;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,7 +45,7 @@ public class PassStore {
 	 * @throws InvalidAESStreamException 
 	 * @throws InvalidPasswordException 
 	 */
-	public static boolean loadPassStore(String password) throws IOException, InvalidPasswordException, InvalidAESStreamException, StrongEncryptionNotAvailableException {
+	public static boolean loadPassStore() throws IOException {
 		if(service == null)
 			service = DriveHelper.getDriveService();
 		passStoreFile.getParentFile().mkdirs();
@@ -79,12 +80,6 @@ public class PassStore {
 			}
 		}
 		if(passStoreFile.exists() && passStoreFile.length() > 0) {
-			Gson gson = new Gson();
-			String json;
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			AES.decrypt(password.toCharArray(), new FileInputStream(PassStore.passStoreFile), os);
-			json = new String(os.toByteArray(), StandardCharsets.UTF_8);
-			instance = gson.fromJson(json, PassStore.class);
 			return true;
 		}
 		return false;
@@ -94,6 +89,15 @@ public class PassStore {
 //		        .setPageSize(10)
 //		        .execute();
 //		return files.containsKey("pass.store");
+	}
+	
+	public static void decryptPassStore(char[] password) throws FileNotFoundException, InvalidPasswordException, InvalidAESStreamException, IOException, StrongEncryptionNotAvailableException {
+		Gson gson = new Gson();
+		String json;
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		AES.decrypt(password, new FileInputStream(PassStore.passStoreFile), os);
+		json = new String(os.toByteArray(), StandardCharsets.UTF_8);
+		instance = gson.fromJson(json, PassStore.class);
 	}
 
 	/**
@@ -110,13 +114,13 @@ public class PassStore {
 	 * @throws StrongEncryptionNotAvailableException
 	 * @throws IOException
 	 */
-	public static void savePassStore(String password) throws InvalidKeyLengthException, StrongEncryptionNotAvailableException, IOException {
+	public static void savePassStore(char[] password) throws InvalidKeyLengthException, StrongEncryptionNotAvailableException, IOException {
 		Gson gson = new Gson();
 		String json = gson.toJson(PassStore.instance);
 		InputStream is = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
 		
 		OutputStream fos = new FileOutputStream(passStoreFile);
-		AES.encrypt(128, password.toCharArray(), is, fos);
+		AES.encrypt(128, password, is, fos);
 		
 		if(service == null)
 			service = DriveHelper.getDriveService();

@@ -46,6 +46,7 @@ public class PassChestFrame extends JFrame {
 		super("PassChest");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(660, 440);
+		setLocationRelativeTo(null);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{650, 0};
@@ -152,7 +153,7 @@ public class PassChestFrame extends JFrame {
 						PassGroup removeGroup = null;
 						for(PassGroup group : PassStore.instance.passwords) {
 							if(group.groupName.equals(((DefaultMutableTreeNode)node).getUserObject())) {
-								if(JOptionPane.showConfirmDialog(PassChestFrame.this, "Are you sure you want to remove group " + group.groupName + " with all it's entries?") == JOptionPane.OK_OPTION) {
+								if(JOptionPane.showConfirmDialog(PassChestFrame.this, "Are you sure you want to remove group " + group.groupName + " with all it's entries?", "Confirmation", JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
 									removeGroup = group;
 									break;
 								}

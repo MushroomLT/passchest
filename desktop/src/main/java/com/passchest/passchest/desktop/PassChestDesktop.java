@@ -13,6 +13,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import com.passchest.passchest.crypto.AES.InvalidAESStreamException;
 import com.passchest.passchest.crypto.AES.InvalidPasswordException;
 import com.passchest.passchest.crypto.AES.StrongEncryptionNotAvailableException;
+import com.passchest.passchest.desktop.ui.ConfigurationGuideFrame;
 import com.passchest.passchest.desktop.ui.PassChestFrame;
 import com.passchest.passchest.store.PassStore;
 
@@ -25,10 +26,16 @@ public class PassChestDesktop {
 				| UnsupportedLookAndFeelException e) {
 		}
 		
-		String password = displayPasswordInputDialog(null);
+		if(!PassStore.passStoreFile.exists()) {
+			new ConfigurationGuideFrame().setVisible(true);
+			return;
+		}
+		
 		try {
-			if(!PassStore.loadPassStore(password)) {
+			if(!PassStore.loadPassStore()) {
 				PassStore.createEmptyPassStore();
+			} else {
+				PassStore.decryptPassStore(displayPasswordInputDialog(null));
 			}
 		} catch (InvalidPasswordException e) {
 			JOptionPane.showMessageDialog(null, "Incorrect password!");
@@ -47,7 +54,7 @@ public class PassChestDesktop {
 		new PassChestFrame().setVisible(true);
 	}
 	
-	public static String displayPasswordInputDialog(JFrame parent) {
+	public static char[] displayPasswordInputDialog(JFrame parent) {
 		JPanel panel = new JPanel();
 		JLabel label = new JLabel("Enter master password:");
 		JPasswordField pass = new JPasswordField(10);
@@ -58,8 +65,8 @@ public class PassChestDesktop {
 		                         JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
 		                         null, options, options[0]);
 		if(option == 0) {
-		    return new String(pass.getPassword());
+		    return pass.getPassword();
 		}
-		return "";
+		return new char[0];
 	}
 }
