@@ -11,6 +11,7 @@ import javax.swing.SwingConstants;
 
 import com.passchest.passchest.DriveHelper;
 import com.passchest.passchest.crypto.AES.InvalidAESStreamException;
+import com.passchest.passchest.crypto.AES.InvalidKeyLengthException;
 import com.passchest.passchest.crypto.AES.InvalidPasswordException;
 import com.passchest.passchest.crypto.AES.StrongEncryptionNotAvailableException;
 import com.passchest.passchest.store.PassStore;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 
+@SuppressWarnings("serial")
 public class ConfigurationGuideFrame extends JFrame {
 	
 	private Font titleFont = new Font("Yu Gothic Light", Font.PLAIN, 37);
@@ -130,18 +132,17 @@ public class ConfigurationGuideFrame extends JFrame {
 		btnFinish.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(new String(passwordField.getPassword()).equals(new String(passwordField_1.getPassword()))) {
+					PassStore.masterPassword = passwordField.getPassword();
 					try {
-						PassStore.decryptPassStore(passwordField.getPassword());
+						PassStore.savePassStore();
 						dispose();
 						new PassChestFrame().setVisible(true);
-					} catch (InvalidPasswordException e1) {
-						JOptionPane.showMessageDialog(null, "Incorrect password!");
-					} catch (IOException e1) {
-						JOptionPane.showMessageDialog(null, "Unable to read pass store!");
-					} catch (InvalidAESStreamException e1) {
-						JOptionPane.showMessageDialog(null, "Invalid pass store file!");
-					} catch (StrongEncryptionNotAvailableException e1) {
-						JOptionPane.showMessageDialog(null, "Decryption not supported on this device!");
+					} catch (InvalidKeyLengthException e2) {
+						JOptionPane.showMessageDialog(ConfigurationGuideFrame.this, "Unable to write to pass store!");
+					} catch (StrongEncryptionNotAvailableException e2) {
+						JOptionPane.showMessageDialog(ConfigurationGuideFrame.this, "Encryption not supported on this device!");
+					} catch (IOException e2) {
+						JOptionPane.showMessageDialog(ConfigurationGuideFrame.this, "Unable to write to pass store!");
 					}
 				} else {
 					JOptionPane.showMessageDialog(ConfigurationGuideFrame.this, "Passwords do not match!");

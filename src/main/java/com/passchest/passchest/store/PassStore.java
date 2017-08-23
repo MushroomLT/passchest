@@ -28,6 +28,7 @@ public class PassStore {
 	
 	public static java.io.File passStoreFile = new java.io.File(System.getProperty("user.home"), ".passchest/pass.store");
 	public static PassStore instance;
+	public static char[] masterPassword;
 	
 	private static Drive service;
 	
@@ -92,6 +93,7 @@ public class PassStore {
 	}
 	
 	public static void decryptPassStore(char[] password) throws FileNotFoundException, InvalidPasswordException, InvalidAESStreamException, IOException, StrongEncryptionNotAvailableException {
+		masterPassword = password;
 		Gson gson = new Gson();
 		String json;
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -114,13 +116,13 @@ public class PassStore {
 	 * @throws StrongEncryptionNotAvailableException
 	 * @throws IOException
 	 */
-	public static void savePassStore(char[] password) throws InvalidKeyLengthException, StrongEncryptionNotAvailableException, IOException {
+	public static void savePassStore() throws InvalidKeyLengthException, StrongEncryptionNotAvailableException, IOException {
 		Gson gson = new Gson();
 		String json = gson.toJson(PassStore.instance);
 		InputStream is = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
 		
 		OutputStream fos = new FileOutputStream(passStoreFile);
-		AES.encrypt(128, password, is, fos);
+		AES.encrypt(128, masterPassword, is, fos);
 		
 		if(service == null)
 			service = DriveHelper.getDriveService();

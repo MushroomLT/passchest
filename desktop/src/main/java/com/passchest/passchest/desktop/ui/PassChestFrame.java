@@ -132,12 +132,12 @@ public class PassChestFrame extends JFrame {
 		btnSavePasswords.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					PassStore.savePassStore(PassChestDesktop.displayPasswordInputDialog(PassChestFrame.this));
+					PassStore.savePassStore();
 					JOptionPane.showMessageDialog(PassChestFrame.this, "Pass store saved successfully!");
 				} catch (InvalidKeyLengthException e) {
 					JOptionPane.showMessageDialog(PassChestFrame.this, "Unable to write to pass store!");
 				} catch (StrongEncryptionNotAvailableException e) {
-					JOptionPane.showMessageDialog(PassChestFrame.this, "Decryption not supported on this device!");
+					JOptionPane.showMessageDialog(PassChestFrame.this, "Encryption not supported on this device!");
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(PassChestFrame.this, "Unable to write to pass store!");
 				}
