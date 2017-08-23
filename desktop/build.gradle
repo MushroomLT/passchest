@@ -2,3 +2,12 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 mainClassName = 'com.passchest.passchest.desktop.PassChestDesktop'
+
+jar {
+  manifest {
+    attributes(
+      'Main-Class': mainClassName
+    )
+  }
+  from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+}
