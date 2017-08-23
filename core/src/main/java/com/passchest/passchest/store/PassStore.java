@@ -30,7 +30,7 @@ public class PassStore {
 	public static PassStore instance;
 	public static char[] masterPassword;
 	
-	private static Drive service;
+	public static Drive service;
 	
 	public List<PassGroup> passwords;
 	
@@ -40,7 +40,6 @@ public class PassStore {
 	
 	/**
 	 * Decrypts and loads the pass store from Google Drive
-	 * @param password Password for decryption
 	 * @throws IOException 
 	 * @throws StrongEncryptionNotAvailableException 
 	 * @throws InvalidAESStreamException 
@@ -111,7 +110,6 @@ public class PassStore {
 
 	/**
 	 * Encrypts and saves the pass store to Google Drive
-	 * @param password Password for encryption
 	 * @throws InvalidKeyLengthException
 	 * @throws StrongEncryptionNotAvailableException
 	 * @throws IOException

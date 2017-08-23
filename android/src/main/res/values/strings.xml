@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PassChest</string>
+    <string name="title_activity_main">PassChest</string>
 </resources>

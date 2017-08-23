@@ -38,9 +38,10 @@
         android:id="@+id/button"
         android:layout_width="213dp"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/textView4"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="60dp"
         android:layout_weight="0.02"
-        android:text="Login"
-        android:layout_below="@+id/textView4"
-        android:layout_centerHorizontal="true" />
+        android:onClick="login"
+        android:text="Login" />
 </RelativeLayout>

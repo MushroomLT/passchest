@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId "com.passchest.passchest.android"
-        minSdkVersion 14
+        minSdkVersion 19
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -37,8 +37,14 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
+    compile project(":passchest-core")
     compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.google.android.gms:play-services-drive:11.0.4'
-	compile project(":passchest-core")
+    compile 'com.google.api-client:google-api-client:1.22.0'
+    compile 'com.google.api-client:google-api-client-android:1.22.0'
+    compile 'com.google.api-client:google-api-client-gson:1.22.0'
+    compile 'com.google.android.gms:play-services-auth:11.0.4'
+    compile 'com.google.code.gson:gson:2.8.1'
+    compile 'com.android.support.constraint:constraint-layout:+'
+    compile 'com.android.support:design:26.+'
+    testCompile 'junit:junit:4.12'
 }
