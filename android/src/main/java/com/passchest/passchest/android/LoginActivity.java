@@ -26,6 +26,7 @@ import com.passchest.passchest.store.PassStore;
 
 import org.mortbay.jetty.Main;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
@@ -40,9 +41,16 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        PassStore.passStoreFile = new File(getFilesDir(), "pass.store");
 
         setContentView(R.layout.activity_login);
+
+        if(PassStore.passStoreFile.exists()){
+            PassStore.service = AndroidDriveHelper.getService(this);
+            if(PassStore.service == null)
+                return;
+            LoginActivity.this.startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        }
     }
 
     public void login(View btn){

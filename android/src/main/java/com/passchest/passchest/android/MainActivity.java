@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        PassStore.passStoreFile = new File(getFilesDir(), "pass.store");
        loadStore();
     }
 
@@ -76,14 +75,19 @@ public class MainActivity extends AppCompatActivity {
                                     PassStore.decryptPassStore(pass[0]);
                                 } catch (AES.InvalidPasswordException e) {
                                     Toast.makeText(MainActivity.this, "Invalid password", Toast.LENGTH_SHORT).show();
+                                    return;
                                 } catch (AES.StrongEncryptionNotAvailableException e) {
                                     Toast.makeText(MainActivity.this, "Decryption unavailable on your device", Toast.LENGTH_SHORT).show();
+                                    return;
                                 } catch (AES.InvalidAESStreamException e) {
                                     Toast.makeText(MainActivity.this, "Error reading password store", Toast.LENGTH_SHORT).show();
+                                    return;
                                 } catch (FileNotFoundException e) {
                                     Toast.makeText(MainActivity.this, "Unable to decrypt pass store - file unaccessible", Toast.LENGTH_SHORT).show();
+                                    return;
                                 } catch (IOException e) {
                                     Toast.makeText(MainActivity.this, "Error reading pass store", Toast.LENGTH_SHORT).show();
+                                    return;
                                 }
                                 TextView data = (TextView) findViewById(R.id.passwordData);
                                 String pwd = "";
